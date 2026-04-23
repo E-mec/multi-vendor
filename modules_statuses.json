@@ -1,0 +1,5 @@
+{
+    "Authentication": true,
+    "Product": true,
+    "Inventory": true
+}
