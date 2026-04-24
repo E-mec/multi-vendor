@@ -9,7 +9,7 @@ Route::prefix('auth')->group(function () {
 
     Route::post('/login', [AuthenticationController::class, 'login']);
 
-    Route::post('/logout', [AuthenticationController::class, 'logout']);
+    Route::get('/logout', [AuthenticationController::class, 'logout']);
 
 });
 
