@@ -22,7 +22,7 @@ class CreateOrder
                 'total_price' => $price,
             ]);
 
-            return $order->load('product');
+            return $order->load(['product.vendor']);
         });
     }
 }

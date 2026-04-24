@@ -11,7 +11,7 @@ class OrderData extends Data
         public int $id,
         public ProductData $product,
         public int $quantity,
-        public float $price,
+        public float $total_price,
     )
     {}
 }
