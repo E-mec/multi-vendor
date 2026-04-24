@@ -1,7 +1,7 @@
 # Multi-Vendor E-Commerce Platform
 
 A modular, API-first multi-vendor e-commerce backend built with **Laravel 13**, organized using a **Domain-Driven Design (DDD)** approach via the `nwidart/laravel-modules` package. The platform supports multiple vendors managing their own product inventories, secured through **JWT-based authentication**.
-
+>  This project demonstrates a modular monolith architecture using Laravel with a focus on scalability, clean domain separation, and API-first design.
 ---
 
 ## Table of Contents
@@ -26,6 +26,7 @@ A modular, API-first multi-vendor e-commerce backend built with **Laravel 13**, 
     - [Installation](#installation)
   - [📜 Available Scripts](#-available-scripts)
   - [🧪 Testing](#-testing)
+  - [🧠 Design Decisions & Assumptions](#-design-decisions--assumptions)
   - [📚 API Documentation](#-api-documentation)
   - [📄 License](#-license)
 
@@ -73,7 +74,7 @@ Multi-Vendor Platform
 ```
 
 This architecture means:
-- Modules are **independently developed and tested**
+- Modules are **logically independent and can be developed/tested in isolation**
 - Each module can be **enabled or disabled** via `modules_statuses.json`
 - Business logic is **co-located** with its domain (routes, controllers, models, migrations all in one module)
 - The system is **horizontally extensible** — new domains (e.g. Payments) can be added as new modules without touching existing code
@@ -320,7 +321,7 @@ GET    /api/products/{id}
 
 ### Inventory Module
 
-Tracks stock levels per product per vendor and place order on products.
+Tracks stock levels per product per vendor and handles order placement.
 
 **Responsibilities:**
 - Maintain stock quantities for products
@@ -502,6 +503,93 @@ Tests are organized in:
 Each module can also contain its own `tests/` directory following the same Feature/Unit split.
 
 ---
+## 🧠 Design Decisions & Assumptions
+
+### 1. Modular Monolith Architecture
+
+I chose a modular monolith using `nwidart/laravel-modules` instead of both a traditional monolith and microservices architecture:
+
+- Compared to a traditional monolith:
+    - Provides better separation of concerns through domain-based modules
+    - Improves maintainability and scalability within a single codebase
+
+- Compared to microservices:
+    - Keeps deployment and infrastructure simple
+    - Avoids distributed system complexity (network calls, service orchestration)
+
+This approach offers a balanced middle ground, allowing the system to scale into microservices later if needed.
+
+---
+
+### 2. JWT Authentication
+JWT (`tymon/jwt-auth`) was chosen over Laravel Sanctum because:
+- The API is stateless
+- It supports mobile and SPA clients easily
+- No server-side session storage is required
+
+---
+
+### 3. API-First Design
+The system is built as an API-first backend to:
+- Allow flexibility for multiple frontends (web, mobile)
+- Encourage separation of concerns
+
+---
+
+### 4. User & Vendor Separation
+
+I chose to separate `users` and `vendors` into different tables instead of using a single vendor-only authentication model.
+
+This was a deliberate architectural decision to separate identity from domain roles.
+
+- The `users` table represents system identity (authentication layer)
+- The `vendors` table represents a role/profile (business layer)
+
+This allows:
+- Users to exist without being vendors (e.g. customers or future roles)
+- A user to become a vendor at any time without affecting authentication
+- Clear separation between authentication logic and domain-specific data
+
+This approach improves flexibility and aligns with real-world systems where:
+- Not every user is a vendor
+- Roles can evolve over time
+
+#### Trade-offs
+- Introduces additional relationships (user ↔ vendor)
+- Slightly more complexity compared to a single-table design
+
+#### Assumptions
+- Each vendor is associated with exactly one user
+- A user can exist without being a vendor
+
+---
+
+### 5. Vendor Ownership Model
+Products are tied to authenticated vendors to ensure:
+- Data isolation between vendors
+- Authorization is enforced via policies and middleware
+
+---
+
+### 6. Inventory Handling
+Stock is updated at the time of order placement:
+- Assumes a single order flow (no cart/checkout system yet)
+- Prevents overselling by reducing stock immediately
+
+---
+
+### 7. Assumptions
+- Each product belongs to one vendor
+- No payment gateway integration (orders are simulated)
+- No role-based permissions beyond authentication
+
+---
+
+### 8. Key Trade-offs Summary
+
+- Modular monolith improves structure but does not provide independent deployment like microservices
+- JWT enables stateless APIs but introduces additional complexity around token lifecycle management
+- Separating users and vendors increases flexibility but adds relational complexity
 
 ---
 
@@ -511,14 +599,13 @@ Interactive API documentation (test endpoints, view schemas, and authentication 
 
 👉 https://hzyjczfb91.apidog.io
 
-Built with :contentReference[oaicite:0]{index=0}.
 
 This documentation includes:
 - Authentication (JWT flow)
 - Product module endpoints
 - Inventory & order management
 - Request/response schemas
-- Live API testing (if server is running)
+- Note: If the API server is not running locally, the documentation will still display all endpoints and schemas, but live request execution may not work.
 
 > Note: A sample of key endpoints and responses is included in this README for quick reference. For complete API coverage, use the Apidog documentation.
 
