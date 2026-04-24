@@ -17,7 +17,7 @@ class CreateOrder
 
             $order = Order::create([
                 'product_id' => $data['product_id'],
-                'user_id' => auth()->id() ?? null,
+                'user_id' => auth('api')->id() ?? null,
                 'quantity' => $data['quantity'],
                 'total_price' => $price,
             ]);

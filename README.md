@@ -96,33 +96,45 @@ multi-vendor/
 │
 ├── Modules/                      # All feature modules live here
 │   ├── Authentication/
-│   │   ├── app/
-│   │   │   ├── Http/Controllers/ # Auth controllers (login, register, logout)
-│   │   │   ├── Models/           # User model
-│   │   │   └── Providers/        # Module service provider
+│   │   |
+│   │   │── actions/          # Authentication and vendor actions (egs: CreateUserAction, CreateVendorAction)
+│   │   │── Http/Controllers/ # Authentication and vendor controllers 
+│   │   │── Models/           # User model
+│   │   │── data/             # Spatie Data DTOs for user and vendor output
+│   │   │── Providers/        # Module service provider
+│   │   │
 │   │   ├── database/
 │   │   │   └── migrations/       # User table migrations
 │   │   ├── resources/views/      # Module views (if any)
+│   │   ├── tests/            # Feature and unit tests for module
 │   │   └── routes/
 │   │       └── api.php           # Auth API routes
 │   │
 │   ├── Product/
-│   │   ├── app/
-│   │   │   ├── Http/Controllers/ # Product CRUD controllers
-│   │   │   ├── Data/             # Spatie Data DTOs for product input/output
-│   │   │   └── Models/           # Product Eloquent model
+│   │   │
+│   │   │── actions/          # Product actions (egs: CreateOrUpdateProductAction)
+│   │   │── Http/Controllers/ # Product CRUD controllers for vendor , user amd guest
+│   │   │── Http/Middlewares/ # Product route guard for vendor , user amd guest
+│   │   │── dto/              # Spatie Data DTOs for product output
+│   │   │── Models/           # Product Eloquent model
+│   │   │── Policy/           # Product model authorization
+│   │   │
 │   │   ├── database/
 │   │   │   └── migrations/       # Products table migrations
+│   │   │── tests/           # Feature and unit tests for module
 │   │   └── routes/
 │   │       └── api.php           # Product API routes (JWT protected)
 │   │
 │   └── Inventory/
-│       ├── app/
-│       │   ├── Http/Controllers/ # Inventory management and Order controllers
-│       │   ├── Data/             # Spatie Data DTOs
-│       │   └── Models/           # Order Eloquent model
+│       |
+│       │── actions/          # Inventory management and Order actions (egs: HandleStockAction, CreateOrderAction)
+│       │── Http/Controllers/ # Inventory management and Order controllers
+│       │── Data/             # Spatie Data DTOs
+│       │── Models/           # Order Eloquent model
+│       │
 │       ├── database/
 │       │   └── migrations/       # Order table migrations
+│       │── tests/           # Feature and unit tests for module
 │       └── routes/
 │           └── api.php           # Order and Inventory API routes (JWT protected)
 │
@@ -476,13 +488,14 @@ This concurrently starts the Laravel server, queue listener, and Vite dev server
 
 ## 📜 Available Scripts
 
-| Command | Description |
-|---|---|
-| `composer run setup` | Full first-time project setup |
-| `composer run dev` | Start Laravel + Queue + Vite concurrently |
-| `composer run test` | Clear config cache and run all tests |
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | Build frontend assets for production |
+| Command              | Description                               |
+|----------------------|-------------------------------------------|
+| `composer run setup` | Full first-time project setup             |
+| `composer run dev`   | Start Laravel + Queue + Vite concurrently |
+| `composer run test`  | Clear config cache and run all tests      |
+| `php artisan test`   | Run all tests                             |
+| `npm run dev`        | Start Vite dev server                     |
+| `npm run build`      | Build frontend assets for production      |
 
 ---
 
