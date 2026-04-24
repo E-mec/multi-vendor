@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Modules\Authentication\Models\User;
 use Modules\Authentication\Models\Vendor;
 use Modules\Product\Enums\ProductStatusEnum;
@@ -8,6 +9,7 @@ use Modules\Product\Models\Product;
 use Tests\TestCase;
 
 uses(TestCase::class, RefreshDatabase::class);
+
 
 function createVendorWithProducts(int $count = 1, array $productOverrides = []): Vendor
 {
@@ -151,4 +153,30 @@ test('non existent product returns 404', function () {
     $response = $this->getJson('api/products/999999');
 
     $response->assertNotFound();
+});
+
+test('public product listing is cached', function () {
+    createVendorWithProducts(3);
+
+    $this->getJson('api/products')->assertOk();
+
+    expect(Cache::has('products:search:none:page:1'))->toBeTrue();
+});
+
+test('public product search result is cached with correct key', function () {
+    createVendorWithProducts(3);
+
+    $this->getJson('api/products?search=blue&page=2')->assertOk();
+
+    expect(Cache::has('products:search:blue:page:2'))->toBeTrue();
+});
+
+test('public product listing cache is separate per page', function () {
+    createVendorWithProducts(3);
+
+    $this->getJson('api/products?page=1')->assertOk();
+    $this->getJson('api/products?page=2')->assertOk();
+
+    expect(Cache::has('products:search:none:page:1'))->toBeTrue();
+    expect(Cache::has('products:search:none:page:2'))->toBeTrue();
 });

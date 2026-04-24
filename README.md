@@ -10,13 +10,13 @@ A modular, API-first multi-vendor e-commerce backend built with **Laravel 13**, 
   - [Table of Contents](#table-of-contents)
   - [🔍 Overview](#-overview)
   - [🧰 Tech Stack](#-tech-stack)
-  - [🏗️ Architecture](#️-architecture)
+  - [🏗️ Architecture](#architecture)
   - [📁 Project Structure](#-project-structure)
   - [📦 Modules](#-modules)
     - [Authentication Module](#authentication-module)
     - [Product Module](#product-module)
     - [Inventory Module](#inventory-module)
-  - [⚙️ Key Implementations](#️-key-implementations)
+  - [⚙️ Key Implementations](#key-implementations)
     - [JWT Authentication (`tymon/jwt-auth`)](#jwt-authentication-tymonjwt-auth)
     - [Modular Architecture (`nwidart/laravel-modules`)](#modular-architecture-nwidartlaravel-modules)
     - [Data Transfer Objects (`spatie/laravel-data`)](#data-transfer-objects-spatielaravel-data)
@@ -61,6 +61,7 @@ The API-first design makes it ready to be consumed by any frontend (React, Vue, 
 ## 🏗️ Architecture
 
 The application follows a **Modular Monolith** pattern using Domain-Driven Design principles. Rather than placing all business logic in Laravel's default `app/` directory, each domain is encapsulated in its own self-contained module under the `Modules/` directory.
+- Includes a registry-based caching layer for high-performance product queries and multi-tenant cache isolation
 
 ```
 Multi-Vendor Platform
@@ -597,6 +598,8 @@ Stock is updated at the time of order placement:
 - No role-based permissions beyond authentication
 
 ---
+
+
 
 ### 8. Key Trade-offs Summary
 

@@ -4,6 +4,7 @@ namespace Modules\Inventory\actions;
 
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\Order;
+use Modules\Product\actions\FlushCacheAction;
 
 class CreateOrder
 {
@@ -21,6 +22,8 @@ class CreateOrder
                 'quantity' => $data['quantity'],
                 'total_price' => $price,
             ]);
+
+            app(FlushCacheAction::class)->execute($product->id);
 
             return $order->load(['product.vendor']);
         });

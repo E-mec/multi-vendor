@@ -9,7 +9,7 @@ class CreateVendorAction
     public function handle(array $data)
     {
        $vendor = Vendor::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth('api')->id(),
             'store_name' => $data['store_name'],
         ]);
 

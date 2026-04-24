@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Modules\Authentication\Models\User;
 use Modules\Authentication\Models\Vendor;
 use Modules\Product\Enums\ProductStatusEnum;
@@ -238,3 +239,81 @@ test('unauthenticated user cannot access vendor product routes', function (strin
     ['putJson',    'api/vendor/products/1'],
     ['deleteJson', 'api/vendor/products/1'],
 ]);
+
+test('products are cached after first request', function () {
+    [$user, $vendor, $token] = createVendorWithToken();
+    Product::factory()->count(3)->create(['vendor_id' => $vendor->id]);
+
+    $this->withHeaders(['Authorization' => "Bearer {$token}"])
+        ->getJson('api/vendor/products')
+        ->assertOk();
+
+    $registryKey = 'vendor:' . $vendor->id . ':cache_keys';
+    $keys = Cache::get($registryKey, []);
+
+    expect($keys)->not->toBeEmpty();
+
+    $cacheKey = sprintf(
+        'vendor:%s:products:search:%s:page:%s',
+        $vendor->id, 'none', 1
+    );
+
+    expect($keys)->toContain($cacheKey);
+    expect(Cache::get($cacheKey))->not->toBeNull();
+});
+
+test('cache is flushed when a product is created', function () {
+    [$user, $vendor, $token] = createVendorWithToken();
+
+    // Warm the cache first
+    $this->withHeaders(['Authorization' => "Bearer {$token}"])
+        ->getJson('api/vendor/products')
+        ->assertOk();
+
+    expect(Cache::get('vendor:' . $vendor->id . ':cache_keys'))->not->toBeNull();
+
+    $this->withHeaders(['Authorization' => "Bearer {$token}"])
+        ->postJson('api/vendor/products', productPayload())
+        ->assertOk();
+
+    expect(Cache::get('vendor:' . $vendor->id . ':cache_keys'))->toBeNull();
+    expect(Cache::get('products:cache_keys'))->toBeNull();
+});
+
+test('cache is flushed when a product is updated', function () {
+    [$user, $vendor, $token] = createVendorWithToken();
+    $product = Product::factory()->create(['vendor_id' => $vendor->id]);
+
+    // Warm the cache first
+    $this->withHeaders(['Authorization' => "Bearer {$token}"])
+        ->getJson('api/vendor/products')
+        ->assertOk();
+
+    expect(Cache::get('vendor:' . $vendor->id . ':cache_keys'))->not->toBeNull();
+
+    $this->withHeaders(['Authorization' => "Bearer {$token}"])
+        ->putJson("api/vendor/products/{$product->id}", productPayload())
+        ->assertOk();
+
+    expect(Cache::get('vendor:' . $vendor->id . ':cache_keys'))->toBeNull();
+    expect(Cache::get('products:cache_keys'))->toBeNull();
+});
+
+test('cache is flushed when a product is deleted', function () {
+    [$user, $vendor, $token] = createVendorWithToken();
+    $product = Product::factory()->create(['vendor_id' => $vendor->id]);
+
+    // Warm the cache first
+    $this->withHeaders(['Authorization' => "Bearer {$token}"])
+        ->getJson('api/vendor/products')
+        ->assertOk();
+
+    expect(Cache::get('vendor:' . $vendor->id . ':cache_keys'))->not->toBeNull();
+
+    $this->withHeaders(['Authorization' => "Bearer {$token}"])
+        ->deleteJson("api/vendor/products/{$product->id}")
+        ->assertOk();
+
+    expect(Cache::get('vendor:' . $vendor->id . ':cache_keys'))->toBeNull();
+    expect(Cache::get('products:cache_keys'))->toBeNull();
+});
