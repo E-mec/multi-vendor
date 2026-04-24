@@ -509,7 +509,7 @@ Each module can also contain its own `tests/` directory following the same Featu
 
 The full interactive API documentation is available via Apidog:
 
- https://your-apidog-link-here
+https://hzyjczfb91.apidog.io
 
 This includes:
 - All endpoints grouped by module (Authentication, Product, Inventory)
