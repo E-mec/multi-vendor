@@ -70,7 +70,7 @@ Multi-Vendor Platform
 └── Modules/
     ├── Authentication/           ← User registration, login, JWT token management
     ├── Product/                  ← Product CRUD, vendor product management
-    └── Inventory/                ← Stock tracking, inventory updates
+    └── Inventory/                ← Stock tracking, Order placement
 ```
 
 This architecture means:
