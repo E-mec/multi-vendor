@@ -507,15 +507,18 @@ Each module can also contain its own `tests/` directory following the same Featu
 
 ## 📚 API Documentation
 
-The full interactive API documentation is available via Apidog:
+Interactive API documentation (test endpoints, view schemas, and authentication flow):
 
-https://hzyjczfb91.apidog.io
+👉 https://hzyjczfb91.apidog.io
 
-This includes:
-- All endpoints grouped by module (Authentication, Product, Inventory)
+Built with :contentReference[oaicite:0]{index=0}.
+
+This documentation includes:
+- Authentication (JWT flow)
+- Product module endpoints
+- Inventory & order management
 - Request/response schemas
-- Authentication (JWT) usage
-- Ability to test endpoints directly from the browser
+- Live API testing (if server is running)
 
 > Note: A sample of key endpoints and responses is included in this README for quick reference. For complete API coverage, use the Apidog documentation.
 
