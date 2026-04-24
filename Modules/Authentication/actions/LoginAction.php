@@ -13,7 +13,7 @@ class LoginAction
     /**
      * @throws ValidationException
      */
-    public function handle($email, $password)
+    public function handle($email, $password): array
     {
         $user = User::where('email', $email)->first();
 

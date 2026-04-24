@@ -47,4 +47,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(Vendor::class);
     }
+
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
+    }
 }

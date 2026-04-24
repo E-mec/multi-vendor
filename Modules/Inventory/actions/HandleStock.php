@@ -33,6 +33,6 @@ class HandleStock
         $product->stock_quantity -= $data['quantity'];
         $product->save();
 
-        return $product;
+        return $product->refresh();
     }
 }
